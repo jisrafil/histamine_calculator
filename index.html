@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Histamine "Bucket" Calculator & Guide</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-primary: #38bdf8;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --border-color: #334155;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            border: 1px solid var(--border-color);
+        }
+        h1 {
+            font-size: 1.8rem;
+            margin-top: 0;
+            color: var(--accent-primary);
+            text-align: center;
+        }
+        p.subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+        .section-title {
+            font-size: 1.2rem;
+            color: var(--accent-primary);
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+        }
+        .slider-group {
+            margin-bottom: 30px;
+            background: #090d16;
+            padding: 18px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin-bottom: 6px;
+        }
+        .layman-explanation {
+            font-size: 0.95rem;
+            color: #e2e8f0;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        .examples-box {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            background: #111827;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            border-left: 3px solid var(--accent-primary);
+        }
+        span.value-badge {
+            background: var(--border-color);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: var(--accent-primary);
+        }
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent-primary);
+            cursor: pointer;
+        }
+        .bucket-visualization {
+            background: #090d16;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+        .bucket-container {
+            width: 140px;
+            height: 180px;
+            background: #020617;
+            margin: 0 auto 15px auto;
+            border: 4px solid var(--border-color);
+            border-top: none;
+            border-radius: 0 0 20px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .bucket-water {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background-color: var(--accent-primary);
+            transition: height 0.3s ease, background-color 0.3s ease;
+        }
+        .bucket-status {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        .symptom-bars {
+            display: grid;
+            gap: 15px;
+        }
+        .bar-row {
+            background: #090d16;
+            padding: 12px 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+        }
+        .progress-track {
+            background: var(--border-color);
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+        .medical-section {
+            margin-top: 40px;
+            background: #111827;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px dashed var(--border-color);
+        }
+        .medical-section h3 {
+            color: var(--accent-warning);
+            margin-top: 0;
+        }
+        .medical-section p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        .github-note {
+            margin-top: 30px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-align: center;
+            border-top: 1px dashed var(--border-color);
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>The Histamine "Bucket" Calculator</h1>
+        <p class="subtitle">Understand how daily habits fill your body's histamine level using everyday examples.</p>
+        
+        <div class="section-title">1. Adjust Your Daily Inputs</div>
+
+        <!-- Slider 1 -->
+        <div class="slider-group">
+            <label for="diet">Dietary Histamine Load: <span id="diet-val" class="value-badge">6</span>/10</label>
+            <div class="layman-explanation"><strong>What this means:</strong> How much histamine you are swallowing in your food. Some foods naturally contain high histamine, while others ("liberators") tell your immune cells to dump their stored histamine into your system.</div>
+            <div class="examples-box"><strong>Everyday Examples:</strong> Eating aged cheeses (parmesan, cheddar), cured meats (salami, bacon), fermented foods (kimchi, kombucha, vinegar), leftovers sitting in the fridge for 2 days, or tomatoes/strawberries.</div>
+            <input type="range" id="diet" min="1" max="10" value="6">
+        </div>
+
+        <!-- Slider 2 -->
+        <div class="slider-group">
+            <label for="stress">Daily Stress & Overwhelm: <span id="stress-val" class="value-badge">7</span>/10</label>
+            <div class="layman-explanation"><strong>What this means:</strong> How much mental or physical pressure your nervous system is dealing with. Stress acts like an alarm bell that forces your immune cells to release histamine.</div>
+            <div class="examples-box"><strong>Everyday Examples:</strong> Rushing through a demanding workday, dealing with traffic jams, worrying about finances, or pushing your body through exhaustion without taking a breather.</div>
+            <input type="range" id="stress" min="1" max="10" value="7">
+        </div>
+
+        <!-- Slider 3 -->
+        <div class="slider-group">
+            <label for="sleep">Sleep Quality & Recovery: <span id="sleep-val" class="value-badge">4</span>/10</label>
+            <div class="layman-explanation"><strong>What this means:</strong> How well your body rests and resets overnight. Poor sleep makes your nervous system extra sensitive and stops your body from clearing out accumulated chemicals.</div>
+            <div class="examples-box"><strong>Everyday Examples:</strong> Waking up multiple times during the night, scrolling your phone right before bed, getting only 5–6 hours of sleep, or feeling completely unrefreshed in the morning.</div>
+            <input type="range" id="sleep" min="1" max="10" value="4">
+        </div>
+
+        <!-- Visual Bucket -->
+        <div class="section-title">2. Your Histamine Bucket Status</div>
+        <div class="bucket-visualization">
+            <div class="bucket-container">
+                <div id="bucket-water" class="bucket-water" style="height: 72%;"></div>
+            </div>
+            <div class="bucket-status" id="overflow-index">72% (Overflowing)</div>
+        </div>
+
+        <!-- Symptom Thresholds -->
+        <div class="section-title">3. Resulting Symptom Load</div>
+        <div class="symptom-bars">
+            <div class="bar-row">
+                <div class="bar-label"><span>Brain Fog & Mental Sluggishness</span><span id="brainfog-score">75%</span></div>
+                <div class="progress-track"><div id="brainfog-bar" class="progress-fill" style="width: 75%;"></div></div>
+            </div>
+            <div class="bar-row">
+                <div class="bar-label"><span>Joint Aches & Stiffness</span><span id="joint-score">60%</span></div>
+                <div class="progress-track"><div id="joint-bar" class="progress-fill" style="width: 60%;"></div></div>
+            </div>
+            <div class="bar-row">
+                <div class="bar-label"><span>Digestive Bloating & Acid Reflux</span><span id="gi-score">68%</span></div>
+                <div class="progress-track"><div id="gi-bar" class="progress-fill" style="width: 68%;"></div></div>
+            </div>
+            <div class="bar-row">
+                <div class="bar-label"><span>Racing Heart & Flushing</span><span id="cardio-score">65%</span></div>
+                <div class="progress-track"><div id="cardio-bar" class="progress-fill" style="width: 65%;"></div></div>
+            </div>
+            <div class="bar-row">
+                <div class="bar-label"><span>Anxiety & "Wired-and-Tired" Feeling</span><span id="anxiety-score">85%</span></div>
+                <div class="progress-track"><div id="anxiety-bar" class="progress-fill" style="width: 85%;"></div></div>
+            </div>
+        </div>
+
+        <!-- Medical Context Section (Lower down) -->
+        <div class="medical-section">
+            <h3>Medical & Scientific Terminology Reference</h3>
+            <p><strong>Dietary Histamine Load & Enteral Overload:</strong> Relates to the mismatch between ingested histamine and the gut's digestive enzyme capacity—specifically <em>diamine oxidase (DAO)</em> deficiency, which prevents proper degradation in the intestinal tract.</p>
+            <p><strong>Stress & The HPA Axis:</strong> Psychological and physical stressors activate the <em>Hypothalamic-Pituitary-Adrenal (HPA) axis</em>, releasing <em>Corticotropin-Releasing Hormone (CRH)</em>. CRH acts as a direct agonist causing <em>mast cell degranulation</em>.</p>
+            <p><strong>Sleep & Circadian Dysregulation:</strong> Disruptions to the suprachiasmatic nucleus impair restorative slow-wave sleep and blunt the normal diurnal cortisol awakening response, perpetuating neuroinflammation and systemic fatigue.</p>
+        </div>
+
+        <div class="github-note">
+            Ready for GitHub: Save this file as index.html and enable GitHub Pages.
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const stressInput = document.getElementById('stress');
+            const sleepInput = document.getElementById('sleep');
+            const dietInput = document.getElementById('diet');
+
+            const stressVal = document.getElementById('stress-val');
+            const sleepVal = document.getElementById('sleep-val');
+            const dietVal = document.getElementById('diet-val');
+
+            const bucketWater = document.getElementById('bucket-water');
+            const overflowIndex = document.getElementById('overflow-index');
+
+            const brainfogBar = document.getElementById('brainfog-bar');
+            const brainfogScore = document.getElementById('brainfog-score');
+
+            const jointBar = document.getElementById('joint-bar');
+            const jointScore = document.getElementById('joint-score');
+
+            const giBar = document.getElementById('gi-bar');
+            const giScore = document.getElementById('gi-score');
+
+            const cardioBar = document.getElementById('cardio-bar');
+            const cardioScore = document.getElementById('cardio-score');
+
+            const anxietyBar = document.getElementById('anxiety-bar');
+            const anxietyScore = document.getElementById('anxiety-score');
+
+            function updateCalculator() {
+                const stress = parseInt(stressInput.value);
+                const sleep = parseInt(sleepInput.value);
+                const diet = parseInt(dietInput.value);
+
+                stressVal.textContent = stress;
+                sleepVal.textContent = sleep;
+                dietVal.textContent = diet;
+
+                const sleepInverted = (11 - sleep);
+
+                let overflow = Math.round((stress * 3.5) + (sleepInverted * 3.5) + (diet * 3.0));
+                if (overflow > 100) overflow = 100;
+                if (overflow < 5) overflow = 5;
+
+                bucketWater.style.height = overflow + '%';
+                
+                if (overflow > 75) {
+                    overflowIndex.textContent = overflow + '% (Severe Overflow)';
+                    overflowIndex.style.color = 'var(--accent-danger)';
+                    bucketWater.style.backgroundColor = 'var(--accent-danger)';
+                } else if (overflow > 45) {
+                    overflowIndex.textContent = overflow + '% (Moderate Load)';
+                    overflowIndex.style.color = 'var(--accent-warning)';
+                    bucketWater.style.backgroundColor = 'var(--accent-warning)';
+                } else {
+                    overflowIndex.textContent = overflow + '% (Stable Baseline)';
+                    overflowIndex.style.color = 'var(--accent-primary)';
+                    bucketWater.style.backgroundColor = 'var(--accent-primary)';
+                }
+
+                const brainFog = Math.min(100, Math.round((stress * 4) + (sleepInverted * 4) + (diet * 1)));
+                const jointPain = Math.min(100, Math.round((stress * 3) + (sleepInverted * 2) + (diet * 5)));
+                const giDistress = Math.min(100, Math.round((stress * 3) + (sleepInverted * 2) + (diet * 6)));
+                const cardio = Math.min(100, Math.round((stress * 5) + (sleepInverted * 2) + (diet * 3)));
+                const anxiety = Math.min(100, Math.round((stress * 6) + (sleepInverted * 3) + (diet * 1)));
+
+                updateBar(brainfogBar, brainfogScore, brainFog);
+                updateBar(jointBar, jointScore, jointPain);
+                updateBar(giBar, giScore, giDistress);
+                updateBar(cardioBar, cardioScore, cardio);
+                updateBar(anxietyBar, anxietyScore, anxiety);
+            }
+
+            function updateBar(bar, scoreEl, val) {
+                bar.style.width = val + '%';
+                scoreEl.textContent = val + '%';
+                if (val > 75) {
+                    bar.style.backgroundColor = 'var(--accent-danger)';
+                } else if (val > 45) {
+                    bar.style.backgroundColor = 'var(--accent-warning)';
+                } else {
+                    bar.style.backgroundColor = 'var(--accent-primary)';
+                }
+            }
+
+            ['input', 'change'].forEach(evt => {
+                stressInput.addEventListener(evt, updateCalculator);
+                sleepInput.addEventListener(evt, updateCalculator);
+                dietInput.addEventListener(evt, updateCalculator);
+            });
+
+            // Run on load
+            updateCalculator();
+        });
+    </script>
+</body>
+</html>
