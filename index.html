@@ -174,6 +174,29 @@
             border-top: 1px dashed var(--border-color);
             padding-top: 15px;
         }
+
+        .toolbar,.profile-panel{background:#0b1220;border:1px solid var(--border-color);border-radius:9px;padding:16px;margin:18px 0;}
+        .toolbar-buttons{display:flex;flex-wrap:wrap;gap:9px;}
+        button{border:1px solid #60758c;background:#273951;color:#fff;padding:10px 13px;border-radius:7px;cursor:pointer;font-weight:600;}
+        button:hover,button:focus-visible{background:#37516f;outline:2px solid var(--accent-primary);outline-offset:2px;}
+        button.primary{background:#075985;border-color:#38bdf8;}
+        .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;}
+        .field-label{display:block;font-size:.91rem;font-weight:600;margin:0 0 6px;}
+        select,input[type="date"],input[type="text"]{width:100%;box-sizing:border-box;background:#111827;color:#f8fafc;border:1px solid #60758c;border-radius:6px;padding:10px;font-size:1rem;}
+        .food-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px 18px;margin:15px 0;}
+        .food-choice{display:flex;align-items:flex-start;justify-content:flex-start;gap:10px;font-weight:400;font-size:.95rem;line-height:1.35;margin:0;}
+        .food-choice input{margin:3px 0 0;transform:scale(1.12);accent-color:var(--accent-primary);}
+        .notice{font-size:.85rem;color:var(--text-muted);line-height:1.5;}
+        .footnote{font-size:.86rem;color:var(--text-muted);margin-top:7px;}
+        .action-checklist{padding-left:5px;list-style:none;}
+        .action-checklist li{margin:11px 0;line-height:1.5;}
+        .action-checklist label{display:flex;justify-content:flex-start;gap:9px;font-size:.95rem;font-weight:400;align-items:flex-start;}
+        details{border:1px solid var(--border-color);background:#111827;border-radius:9px;padding:18px;margin:25px 0;}
+        summary{cursor:pointer;color:var(--accent-primary);font-weight:700;font-size:1.1rem;}
+        .save-panel{margin-top:20px;border-top:1px dashed var(--border-color);padding-top:18px;}
+        .inline-note{color:var(--accent-primary);font-size:.9rem;margin-top:8px;min-height:1.2em;}
+        .muted-divider{border:none;border-top:1px solid var(--border-color);margin:18px 0;}
+        @media(max-width:560px){body{padding:6px}.container{padding:14px}.toolbar-buttons button{width:100%}}
     </style>
 </head>
 <body>
@@ -181,14 +204,46 @@
         <h1>The Histamine "Bucket" Calculator</h1>
         <p class="subtitle">Understand how daily habits fill your body's histamine level using everyday examples.</p>
         
-        <div class="section-title">1. Adjust Your Daily Inputs</div>
 
-        <!-- Slider 1 -->
+        <div class="profile-panel" aria-label="Tracker profile and date">
+            <div class="form-grid">
+                <div><label class="field-label" for="profile">Who is using this tracker?</label>
+                    <select id="profile"><option value="guest">Family / guest (this browser)</option><option value="owner">My personal tracker (Notion export)</option></select></div>
+                <div><label class="field-label" for="entryDate">Entry date</label><input type="date" id="entryDate"></div>
+                <div id="guestNameField"><label class="field-label" for="guestName">Guest label (optional, this browser only)</label><input type="text" id="guestName" maxlength="35" autocomplete="off" placeholder="e.g., Family member 1"></div>
+            </div>
+            <p class="notice" id="privacyNote">Information is stored only in this browser if you choose Save. On shared devices, anyone with browser access may see locally stored entries. No automatic Notion connection is enabled.</p>
+        </div>
+        <div class="toolbar">
+            <div class="field-label">Try a scenario (examples only; not your actual observations)</div>
+            <div class="toolbar-buttons">
+                <button type="button" id="highPreset">High Stress / Poor Sleep Day</button>
+                <button type="button" id="calmPreset">Calm Recovery Day</button>
+                <button type="button" id="resetInputs">Reset / Clear Current Answers</button>
+            </div>
+            <div class="inline-note" id="scenarioStatus" role="status">Complete the questions below, or try a scenario.</div>
+        </div>
+
+        <div class="section-title">1. Your Daily Inputs</div>
+
+
+        <!-- Dietary categories: examples for self-report, not a measurement of histamine concentration -->
         <div class="slider-group">
-            <label for="diet">Dietary Histamine Load: <span id="diet-val" class="value-badge">6</span>/10</label>
-            <div class="layman-explanation"><strong>What this means:</strong> How much histamine you are swallowing in your food. Some foods naturally contain high histamine, while others ("liberators") tell your immune cells to dump their stored histamine into your system.</div>
-            <div class="examples-box"><strong>Everyday Examples:</strong> Eating aged cheeses (parmesan, cheddar), cured meats (salami, bacon), fermented foods (kimchi, kombucha, vinegar), leftovers sitting in the fridge for 2 days, or tomatoes/strawberries.</div>
-            <input type="range" id="diet" min="1" max="10" value="6">
+            <label for="diet">Food Exposure: <span id="diet-val" class="value-badge">—</span>/10</label>
+            <div class="layman-explanation">Select any of these foods you had today. The category count gives a simple exploratory score; it does not measure histamine in your body or prove a trigger.</div>
+            <div class="food-options" id="foodOptions">
+                <label class="food-choice"><input type="checkbox" name="food" value="aged-cheese"> Aged cheeses</label>
+                <label class="food-choice"><input type="checkbox" name="food" value="cured-meat"> Cured or fermented meats</label>
+                <label class="food-choice"><input type="checkbox" name="food" value="fermented"> Fermented foods or sauces</label>
+                <label class="food-choice"><input type="checkbox" name="food" value="fish"> Fish that was not freshly caught/prepared (e.g., canned fish)</label>
+                <label class="food-choice"><input type="checkbox" name="food" value="leftovers"> Leftovers</label>
+                <label class="food-choice"><input type="checkbox" name="food" value="alcohol"> Beer or wine</label>
+                <label class="food-choice"><input type="checkbox" name="food" value="other"> Other food you want to monitor</label>
+            </div>
+            <label class="food-choice"><input type="checkbox" id="noFoods"> None of these foods today</label>
+            <p id="foodCount" class="footnote" aria-live="polite">Not answered · Choose foods or “none.”</p>
+            <p class="notice">Count groups: 0, 1, 2–3, or 4+ categories. Quantity, storage, and individual tolerance vary. These are possible exposures, not verified causes.</p>
+            <input type="hidden" id="diet" value="">
         </div>
 
         <!-- Slider 2 -->
@@ -199,12 +254,27 @@
             <input type="range" id="stress" min="1" max="10" value="7">
         </div>
 
-        <!-- Slider 3 -->
+
+        <!-- Sleep: separated into specific, observable answers -->
         <div class="slider-group">
-            <label for="sleep">Sleep Quality & Recovery: <span id="sleep-val" class="value-badge">4</span>/10</label>
-            <div class="layman-explanation"><strong>What this means:</strong> How well your body rests and resets overnight. Poor sleep makes your nervous system extra sensitive and stops your body from clearing out accumulated chemicals.</div>
-            <div class="examples-box"><strong>Everyday Examples:</strong> Waking up multiple times during the night, scrolling your phone right before bed, getting only 5–6 hours of sleep, or feeling completely unrefreshed in the morning.</div>
-            <input type="range" id="sleep" min="1" max="10" value="4">
+            <label for="sleepHours">Sleep &amp; Recovery: <span id="sleep-val" class="value-badge">—</span>/10</label>
+            <div class="layman-explanation">Sleep length, awakenings, and your ability to fall back asleep are tracked separately. Skip any question you cannot answer; missing is never treated as zero.</div>
+            <div class="form-grid">
+                <div><label class="field-label" for="sleepHours">How long did you actually sleep?</label>
+                    <select id="sleepHours"><option value="">Not answered</option><option value="lt4">Less than 4 hours</option><option value="4to6">4–6 hours</option><option value="6to7">6–7 hours</option><option value="7to9">7–9 hours</option><option value="gt9">More than 9 hours</option></select></div>
+                <div><label class="field-label" for="awakenings">How many times did you wake up?</label>
+                    <select id="awakenings"><option value="">Not answered</option><option value="0">0</option><option value="1">1</option><option value="2to3">2–3</option><option value="4plus">4+</option></select></div>
+                <div><label class="field-label" for="returnSleep">How long to get back to sleep?</label>
+                    <select id="returnSleep"><option value="">Not answered</option><option value="na">Not applicable (did not wake)</option><option value="under5">Under 5 min</option><option value="5to15">5–15 min</option><option value="16to30">16–30 min</option><option value="over30">Over 30 min</option><option value="unable">Could not fall back asleep</option></select></div>
+                <div><label class="field-label" for="sleepQuality">Overall sleep quality (0–10)</label>
+                    <select id="sleepQuality"><option value="">Not answered</option></select></div>
+                <div><label class="field-label" for="refreshed">Did you wake refreshed?</label>
+                    <select id="refreshed"><option value="">Not answered</option><option value="yes">Yes</option><option value="no">No</option><option value="unsure">Unsure</option></select></div>
+                <div><label class="field-label" for="sleepReason">Main reason for waking (optional)</label>
+                    <select id="sleepReason"><option value="">Not answered</option><option value="pain">Pain</option><option value="bathroom">Bathroom</option><option value="itching-heat">Itching or heat</option><option value="worry">Worry / racing thoughts</option><option value="unknown">Unknown</option><option value="other">Other</option></select></div>
+            </div>
+            <p class="notice">Sleep score is an illustrative summary of answers, not a physiological test. Individual answers are retained when saved.</p>
+            <input type="hidden" id="sleep" value="">
         </div>
 
         <!-- Visual Bucket -->
@@ -241,6 +311,25 @@
             </div>
         </div>
 
+
+        <details id="nextSteps">
+            <summary>Next Steps — Personal Checklist</summary>
+            <p class="notice">These tips are based on this app's illustrative bucket level, not a diagnosis or an instruction to change medications.</p>
+            <div id="actionIntro" class="layman-explanation">Complete inputs to see suggested next steps.</div>
+            <ul class="action-checklist" id="actionItems"></ul>
+            <p class="notice"><strong>Regardless of score:</strong> New trouble breathing, throat/tongue swelling, fainting, or concerning chest pain warrants emergency medical attention. Persistently worsening symptoms deserve review with a clinician.</p>
+        </details>
+        <div class="save-panel">
+            <div class="section-title">4. Save or Export Your Observation</div>
+            <p class="notice">Save is local to this browser, by date and profile. Saving the same date again replaces that profile's local entry, rather than creating a duplicate. This does not sync to Notion yet.</p>
+            <div class="toolbar-buttons">
+                <button type="button" class="primary" id="saveEntry">Save Daily Entry Locally</button>
+                <button type="button" id="exportEntry">Download Entry (JSON)</button>
+                <button type="button" id="copyNotion">Copy Owner's Notion Summary</button>
+            </div>
+            <p class="inline-note" id="saveStatus" role="status"></p>
+        </div>
+
         <!-- Medical Context Section (Lower down) -->
         <div class="medical-section">
             <h3>Medical & Scientific Terminology Reference</h3>
@@ -249,104 +338,240 @@
             <p><strong>Sleep & Circadian Dysregulation:</strong> Disruptions to the suprachiasmatic nucleus impair restorative slow-wave sleep and blunt the normal diurnal cortisol awakening response, perpetuating neuroinflammation and systemic fatigue.</p>
         </div>
 
-        <div class="github-note">
-            Ready for GitHub: Save this file as index.html and enable GitHub Pages.
-        </div>
+        <div class="github-note">Exploratory self-evaluation. This calculator does not measure histamine or diagnose a condition. Information stays in the current browser unless you choose to export it.</div>
     </div>
 
+
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const stressInput = document.getElementById('stress');
-            const sleepInput = document.getElementById('sleep');
-            const dietInput = document.getElementById('diet');
+    document.addEventListener('DOMContentLoaded', () => {
+      const $ = id => document.getElementById(id);
+      const foodBoxes = Array.from(document.querySelectorAll('input[name="food"]'));
+      const sleepFields = ['sleepHours','awakenings','returnSleep','sleepQuality','refreshed','sleepReason'];
+      const formFields = [...sleepFields,'stress'];
+      const currentDate = () => {
+        const today = new Date();
+        const offset = today.getTimezoneOffset() * 60000;
+        return new Date(today.getTime() - offset).toISOString().slice(0,10);
+      };
+      $('entryDate').value = currentDate();
+      for (let score=0;score<=10;score++) {
+        const opt = document.createElement('option');
+        opt.value = String(score);
+        opt.textContent = String(score);
+        $('sleepQuality').appendChild(opt);
+      }
 
-            const stressVal = document.getElementById('stress-val');
-            const sleepVal = document.getElementById('sleep-val');
-            const dietVal = document.getElementById('diet-val');
+      let scenarioPreview = false;
+      let currentLoad = null;
+      let currentLevel = '';
+      const sleepWeight = {
+        sleepHours:{lt4:2,'4to6':4,'6to7':6,'7to9':9,gt9:7},
+        awakenings:{'0':10,'1':8,'2to3':5,'4plus':2},
+        returnSleep:{na:10,under5:10,'5to15':8,'16to30':5,over30:2,unable:1},
+        refreshed:{yes:9,no:2}
+      };
+      const minMax = (value,min,max) => Math.min(max,Math.max(min,value));
+      const severity = v => v>75?'Severe Overflow':v>45?'Moderate Load':'Stable Baseline';
+      const advice = {
+        'Severe Overflow': [
+          'Note what symptoms are most disruptive and when they started.',
+          'Consider a short rest or lower-demand activity if practical.',
+          'Review stress, sleep, and food answers for possible patterns; a high model score does not identify a cause.',
+          'Contact a clinician for persistent, worsening, or concerning symptoms.'
+        ],
+        'Moderate Load': [
+          'Record symptoms and their timing without assuming a cause.',
+          'Plan a practical sleep and rest routine for tonight.',
+          'Review any recent changes in food, sleep, and stress over several days.'
+        ],
+        'Stable Baseline': [
+          'Record what helped your day feel manageable.',
+          'Keep sleep and stress observations consistent.',
+          'Continue comparing several days instead of drawing conclusions from a single score.'
+        ]
+      };
+      function showMessage(element,message) {$(element).textContent=message;}
+      function updateProfile() {
+        const owner = $('profile').value==='owner';
+        $('guestNameField').hidden = owner;
+        $('copyNotion').hidden = !owner;
+        $('privacyNote').textContent = owner
+          ? 'Owner mode: saved locally in this browser only. Copy Notion Summary prepares text for your existing dated Task & Journal entry; automatic sync is NOT connected. No credentials belong in this public page.'
+          : 'Guest mode: each device has its own local records. On a shared browser, guest labels are not password-protected and others with access to the browser may view the data. Guest entries never go to the owner’s Notion.';
+      }
+      $('profile').addEventListener('change',updateProfile); updateProfile();
 
-            const bucketWater = document.getElementById('bucket-water');
-            const overflowIndex = document.getElementById('overflow-index');
-
-            const brainfogBar = document.getElementById('brainfog-bar');
-            const brainfogScore = document.getElementById('brainfog-score');
-
-            const jointBar = document.getElementById('joint-bar');
-            const jointScore = document.getElementById('joint-score');
-
-            const giBar = document.getElementById('gi-bar');
-            const giScore = document.getElementById('gi-score');
-
-            const cardioBar = document.getElementById('cardio-bar');
-            const cardioScore = document.getElementById('cardio-score');
-
-            const anxietyBar = document.getElementById('anxiety-bar');
-            const anxietyScore = document.getElementById('anxiety-score');
-
-            function updateCalculator() {
-                const stress = parseInt(stressInput.value);
-                const sleep = parseInt(sleepInput.value);
-                const diet = parseInt(dietInput.value);
-
-                stressVal.textContent = stress;
-                sleepVal.textContent = sleep;
-                dietVal.textContent = diet;
-
-                const sleepInverted = (11 - sleep);
-
-                let overflow = Math.round((stress * 3.5) + (sleepInverted * 3.5) + (diet * 3.0));
-                if (overflow > 100) overflow = 100;
-                if (overflow < 5) overflow = 5;
-
-                bucketWater.style.height = overflow + '%';
-                
-                if (overflow > 75) {
-                    overflowIndex.textContent = overflow + '% (Severe Overflow)';
-                    overflowIndex.style.color = 'var(--accent-danger)';
-                    bucketWater.style.backgroundColor = 'var(--accent-danger)';
-                } else if (overflow > 45) {
-                    overflowIndex.textContent = overflow + '% (Moderate Load)';
-                    overflowIndex.style.color = 'var(--accent-warning)';
-                    bucketWater.style.backgroundColor = 'var(--accent-warning)';
-                } else {
-                    overflowIndex.textContent = overflow + '% (Stable Baseline)';
-                    overflowIndex.style.color = 'var(--accent-primary)';
-                    bucketWater.style.backgroundColor = 'var(--accent-primary)';
-                }
-
-                const brainFog = Math.min(100, Math.round((stress * 4) + (sleepInverted * 4) + (diet * 1)));
-                const jointPain = Math.min(100, Math.round((stress * 3) + (sleepInverted * 2) + (diet * 5)));
-                const giDistress = Math.min(100, Math.round((stress * 3) + (sleepInverted * 2) + (diet * 6)));
-                const cardio = Math.min(100, Math.round((stress * 5) + (sleepInverted * 2) + (diet * 3)));
-                const anxiety = Math.min(100, Math.round((stress * 6) + (sleepInverted * 3) + (diet * 1)));
-
-                updateBar(brainfogBar, brainfogScore, brainFog);
-                updateBar(jointBar, jointScore, jointPain);
-                updateBar(giBar, giScore, giDistress);
-                updateBar(cardioBar, cardioScore, cardio);
-                updateBar(anxietyBar, anxietyScore, anxiety);
-            }
-
-            function updateBar(bar, scoreEl, val) {
-                bar.style.width = val + '%';
-                scoreEl.textContent = val + '%';
-                if (val > 75) {
-                    bar.style.backgroundColor = 'var(--accent-danger)';
-                } else if (val > 45) {
-                    bar.style.backgroundColor = 'var(--accent-warning)';
-                } else {
-                    bar.style.backgroundColor = 'var(--accent-primary)';
-                }
-            }
-
-            ['input', 'change'].forEach(evt => {
-                stressInput.addEventListener(evt, updateCalculator);
-                sleepInput.addEventListener(evt, updateCalculator);
-                dietInput.addEventListener(evt, updateCalculator);
-            });
-
-            // Run on load
-            updateCalculator();
-        });
+      function calculateFood() {
+        const count = foodBoxes.filter(x=>x.checked).length;
+        const answered = $('noFoods').checked || count>0;
+        const score = !answered?'': count===0?1:count===1?3:count<=3?6:9;
+        $('diet').value = score;
+        $('diet-val').textContent = score===''?'—':score;
+        $('foodCount').textContent = !answered ? 'Not answered · Choose foods or “none.”' :
+          count===0 ? '0 categories · None selected' :
+          count===1 ? '1 category · One selected' :
+          count<=3 ? count+' categories · 2–3 band' :
+          count+' categories · 4+ band';
+        return score;
+      }
+      function calculateSleep() {
+        const weighted = [];
+        for (const id of ['sleepHours','awakenings','returnSleep','refreshed']) {
+          const value = $(id).value;
+          if (value && Object.hasOwn(sleepWeight[id],value))
+            weighted.push({value:sleepWeight[id][value], weight:id==='sleepHours'?3:id==='awakenings'?3:id==='returnSleep'?2:1});
+        }
+        if ($('sleepQuality').value!=='')
+          weighted.push({value:Number($('sleepQuality').value),weight:3});
+        const totalWeight = weighted.reduce((a,x)=>a+x.weight,0);
+        const score = totalWeight ? minMax(Math.round(weighted.reduce((a,x)=>a+x.value*x.weight,0)/totalWeight),1,10) : '';
+        $('sleep').value=score;
+        $('sleep-val').textContent=score===''?'—':score;
+        return score;
+      }
+      function updateBar(id,value) {
+        const bar=$(id+'-bar'),label=$(id+'-score');
+        bar.style.width = value===null?'0%':value+'%';
+        label.textContent = value===null?'—':value+'%';
+        bar.style.backgroundColor = value>75?'var(--accent-danger)':value>45?'var(--accent-warning)':'var(--accent-primary)';
+      }
+      function renderNextSteps() {
+        const intro=$('actionIntro'),items=$('actionItems');
+        items.replaceChildren();
+        if (!currentLevel) {intro.textContent='Complete sleep and food inputs to explore next steps.';return;}
+        intro.textContent = currentLevel+' — Choose the steps that feel relevant to your situation.';
+        for (const item of advice[currentLevel]) {
+          const li=document.createElement('li'),label=document.createElement('label'),cb=document.createElement('input'),txt=document.createElement('span');
+          cb.type='checkbox';txt.textContent=item;label.append(cb,txt);li.append(label);items.append(li);
+        }
+      }
+      function recalculate() {
+        const diet = calculateFood(), sleep = calculateSleep(), stress = Number($('stress').value);
+        $('stress-val').textContent=String(stress);
+        const bucket=$('bucket-water'),status=$('overflow-index');
+        if (diet==='' || sleep==='') {
+          currentLoad=null;currentLevel='';
+          bucket.style.height='0%';
+          status.textContent='Add food and sleep answers to see the bucket';
+          status.style.color='var(--accent-primary)';
+          for (const id of ['brainfog','joint','gi','cardio','anxiety']) updateBar(id,null);
+          renderNextSteps();return;
+        }
+        const inverted=11-Number(sleep);
+        const pct=minMax(Math.round(stress*3.5 + inverted*3.5 + Number(diet)*3),5,100);
+        currentLoad=pct;currentLevel=severity(pct);
+        bucket.style.height=pct+'%';
+        status.textContent=pct+'% ('+currentLevel+' · illustrative)';
+        const color=pct>75?'var(--accent-danger)':pct>45?'var(--accent-warning)':'var(--accent-primary)';
+        status.style.color=color;bucket.style.backgroundColor=color;
+        updateBar('brainfog',minMax(Math.round(stress*4+inverted*4+Number(diet)),0,100));
+        updateBar('joint',minMax(Math.round(stress*3+inverted*2+Number(diet)*5),0,100));
+        updateBar('gi',minMax(Math.round(stress*3+inverted*2+Number(diet)*6),0,100));
+        updateBar('cardio',minMax(Math.round(stress*5+inverted*2+Number(diet)*3),0,100));
+        updateBar('anxiety',minMax(Math.round(stress*6+inverted*3+Number(diet)),0,100));
+        renderNextSteps();
+      }
+      function setAnswers(values) {
+        $('stress').value=values.stress;
+        foodBoxes.forEach(box=>box.checked=(values.foods||[]).includes(box.value));
+        $('noFoods').checked=(values.foods||[]).length===0;
+        for (const id of sleepFields) $(id).value=values[id]||'';
+        scenarioPreview=true;
+        showMessage('scenarioStatus','Scenario preview only — change answers or explicitly confirm before saving as your real day.');
+        recalculate();
+      }
+      $('highPreset').addEventListener('click',()=>setAnswers({stress:9,foods:['aged-cheese','cured-meat','leftovers'],sleepHours:'lt4',awakenings:'4plus',returnSleep:'over30',sleepQuality:'2',refreshed:'no',sleepReason:'worry'}));
+      $('calmPreset').addEventListener('click',()=>setAnswers({stress:2,foods:[],sleepHours:'7to9',awakenings:'0',returnSleep:'na',sleepQuality:'9',refreshed:'yes'}));
+      $('resetInputs').addEventListener('click',()=>{
+        $('stress').value=5;$('noFoods').checked=false;
+        foodBoxes.forEach(x=>x.checked=false);
+        sleepFields.forEach(id=>$(id).value='');
+        scenarioPreview=false;
+        showMessage('scenarioStatus','Current answers cleared. Previously saved daily entries were not deleted.');
+        showMessage('saveStatus','');recalculate();
+      });
+      foodBoxes.forEach(box=>box.addEventListener('change',()=>{
+        if (box.checked) $('noFoods').checked=false;
+        recalculate();
+      }));
+      $('noFoods').addEventListener('change',()=>{
+        if ($('noFoods').checked) foodBoxes.forEach(box=>box.checked=false);
+        recalculate();
+      });
+      for (const id of [...formFields]) $(id).addEventListener('input',recalculate);
+      function entry() {
+        return {
+          version:2,date:$('entryDate').value,profile:$('profile').value,
+          stress:Number($('stress').value),
+          foodCategories:foodBoxes.filter(x=>x.checked).map(x=>x.value),
+          noListedFoods:$('noFoods').checked,
+          dietScore:$('diet').value===''?null:Number($('diet').value),
+          sleepHours:$('sleepHours').value||null,
+          awakenings:$('awakenings').value||null,
+          returnToSleep:$('returnSleep').value||null,
+          sleepQuality:$('sleepQuality').value===''?null:Number($('sleepQuality').value),
+          wokeRefreshed:$('refreshed').value||null,
+          sleepReason:$('sleepReason').value||null,
+          sleepSummaryScore:$('sleep').value===''?null:Number($('sleep').value),
+          illustrativeBucket:currentLoad,illustrativeCategory:currentLevel||null
+        };
+      }
+      function keyForProfile() {
+        if ($('profile').value==='owner') return 'jp-histamine-v2-owner';
+        const label=($('guestName').value.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,35)||'guest');
+        return 'jp-histamine-v2-guest-'+label;
+      }
+      function validToSave() {
+        if (!$('entryDate').value) {showMessage('saveStatus','Choose a date.');return false;}
+        if ($('diet').value===''&&$('sleep').value==='') {showMessage('saveStatus','Enter at least one sleep or food observation before saving.');return false;}
+        if (scenarioPreview && !confirm('A demo scenario preset is active. Are these truly your observations for this date? Select Cancel to avoid saving example data.')) return false;
+        return true;
+      }
+      $('saveEntry').addEventListener('click',()=>{
+        if (!validToSave())return;
+        try {
+          const key=keyForProfile();
+          const existing=JSON.parse(localStorage.getItem(key)||'[]');
+          const e=entry(),items=Array.isArray(existing)?existing.filter(x=>x.date!==e.date):[];
+          items.push(e);
+          localStorage.setItem(key,JSON.stringify(items));
+          scenarioPreview=false;
+          showMessage('saveStatus','Saved locally for '+e.date+'. Not sent to Notion.');
+        } catch(err) {showMessage('saveStatus','Browser storage unavailable. Use Download Entry instead.');}
+      });
+      $('exportEntry').addEventListener('click',()=>{
+        if (!$('entryDate').value) {showMessage('saveStatus','Choose a date before exporting.');return;}
+        const e=entry(),blob=new Blob([JSON.stringify(e,null,2)],{type:'application/json'});
+        const url=URL.createObjectURL(blob),a=document.createElement('a');
+        a.href=url;a.download='histamine-self-evaluation-'+e.date+'.json';
+        document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+        showMessage('saveStatus','JSON entry exported from current answers.');
+      });
+      $('copyNotion').addEventListener('click',async()=>{
+        if ($('profile').value!=='owner')return;
+        const e=entry();
+        const list=e.foodCategories.length?e.foodCategories.join(', '):(e.noListedFoods?'None selected':'Not recorded');
+        const text='Histamine self-evaluation — '+e.date+'\n'+
+          'Sleep quality (0–10): '+(e.sleepQuality??'Not recorded')+'\n'+
+          'Nighttime awakenings: '+(e.awakenings??'Not recorded')+'\n'+
+          'Woke refreshed: '+(e.wokeRefreshed??'Not recorded')+'\n'+
+          'Sleep duration band: '+(e.sleepHours??'Not recorded')+'\n'+
+          'Time to return to sleep: '+(e.returnToSleep??'Not recorded')+'\n'+
+          'Reason for waking: '+(e.sleepReason??'Not recorded')+'\n'+
+          'Stress (0–10): '+e.stress+'\n'+
+          'Food categories: '+list+'\n'+
+          'Illustrative bucket index: '+(e.illustrativeBucket??'Not calculated')+'\n'+
+          'Note: exploratory self-report, not a medical measurement. Add to existing dated 2026 Task & Journal entry without replacing existing fields.';
+        try {
+          await navigator.clipboard.writeText(text);
+          showMessage('saveStatus','Copied! Paste this into your ChatGPT Notion logging workflow. Notion was not updated automatically.');
+        } catch(err) {
+          window.prompt('Copy this text for your dated Notion journal entry:',text);
+          showMessage('saveStatus','Notion summary prepared. It was not synced automatically.');
+        }
+      });
+      recalculate();
+    });
     </script>
 </body>
 </html>
