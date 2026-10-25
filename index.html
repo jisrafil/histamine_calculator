@@ -436,6 +436,7 @@
       let scenarioPreview = false;
       let currentLoad = null;
       let currentLevel = '';
+      const checkedActions = new Set();
       const sleepWeight = {
         sleepHours:{lt4:2,'4to6':4,'6to7':6,'7to9':9,gt9:7},
         awakenings:{'0':10,'1':8,'2to3':5,'4plus':2},
@@ -549,7 +550,10 @@
         intro.textContent = currentLevel+' — Choose the steps that feel relevant to your situation.';
         for (const item of advice[currentLevel]) {
           const li=document.createElement('li'),label=document.createElement('label'),cb=document.createElement('input'),txt=document.createElement('span');
-          cb.type='checkbox';txt.textContent=item;label.append(cb,txt);li.append(label);items.append(li);
+          cb.type='checkbox';
+          cb.checked=checkedActions.has(item);
+          cb.addEventListener('change',()=>{if(cb.checked)checkedActions.add(item);else checkedActions.delete(item);});
+          txt.textContent=item;label.append(cb,txt);li.append(label);items.append(li);
         }
       }
       function recalculate() {
@@ -603,6 +607,7 @@
         foodBoxes.forEach(x=>x.checked=false);
         sleepFields.forEach(id=>$(id).value='');
         scenarioPreview=false;
+        checkedActions.clear();
         showMessage('scenarioStatus','Current answers cleared. Previously saved daily entries were not deleted.');
         showMessage('saveStatus','');recalculate();
       });
@@ -668,6 +673,7 @@
         } catch(err) {showMessage('saveStatus','Browser storage unavailable. Use Download Entry instead.');}
       });
       $('exportEntry').addEventListener('click',()=>{
+        if (scenarioPreview && !confirm('This is an example scenario. Export these example answers anyway?'))return;
         if (!$('entryDate').value) {showMessage('saveStatus','Choose a date before exporting.');return;}
         const e=entry(),blob=new Blob([JSON.stringify(e,null,2)],{type:'application/json'});
         const url=URL.createObjectURL(blob),a=document.createElement('a');
@@ -677,6 +683,7 @@
       });
       $('copyNotion').addEventListener('click',async()=>{
         if ($('profile').value!=='owner')return;
+        if (scenarioPreview && !confirm('This is a demo scenario, not a real observation. Copy the example values anyway?'))return;
         const e=entry();
         const list=e.foodCategories.length?e.foodCategories.join(', '):(e.noListedFoods?'None selected':'Not recorded');
         const text='Histamine self-evaluation — '+e.date+'\n'+
