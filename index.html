@@ -197,6 +197,15 @@
         .inline-note{color:var(--accent-primary);font-size:.9rem;margin-top:8px;min-height:1.2em;}
         .muted-divider{border:none;border-top:1px solid var(--border-color);margin:18px 0;}
         @media(max-width:560px){body{padding:6px}.container{padding:14px}.toolbar-buttons button{width:100%}}
+
+        .section-heading{font-size:1.11rem;font-weight:700;color:var(--accent-primary);margin-bottom:9px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+        .subtle-tag{font-size:.75rem;color:var(--text-muted);font-weight:400;}
+        .emotional-questions{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin:16px 0;}
+        .emotion-question{background:#111827;border:1px solid var(--border-color);padding:12px;border-radius:8px;}
+        .emotion-question .field-label{min-height:2.5em;}
+        .insight-note{margin:14px 0;padding:12px;border:1px solid var(--border-color);border-left:3px solid var(--accent-primary);background:#101c2c;border-radius:6px;font-size:.91rem;line-height:1.45;}
+        #ongoingNotes{width:100%;box-sizing:border-box;background:#111827;color:#f8fafc;border:1px solid #60758c;border-radius:6px;padding:10px;resize:vertical;font-family:inherit;font-size:1rem;line-height:1.4;}
+        input:disabled{opacity:.5;cursor:not-allowed;}
     </style>
 </head>
 <body>
@@ -248,12 +257,70 @@
 
         <!-- Slider 2 -->
         <div class="slider-group">
-            <label for="stress">Daily Stress & Overwhelm: <span id="stress-val" class="value-badge">7</span>/10</label>
-            <div class="layman-explanation"><strong>What this means:</strong> How much mental or physical pressure your nervous system is dealing with. Stress acts like an alarm bell that forces your immune cells to release histamine.</div>
-            <div class="examples-box"><strong>Everyday Examples:</strong> Rushing through a demanding workday, dealing with traffic jams, worrying about finances, or pushing your body through exhaustion without taking a breather.</div>
-            <input type="range" id="stress" min="1" max="10" value="7">
+            <label for="stress">Perceived Stress Today: <span id="stress-val" class="value-badge">5</span>/10</label>
+            <div class="layman-explanation"><strong>How stressful did today feel to you?</strong> This is your own sense of stress (0–10), which may be very different from how often you felt worried, tearful, or exhausted. Stress-related immune signaling is a research topic; this rating does not measure hormones or histamine.</div>
+            <div class="examples-box"><strong>Examples:</strong> Work that wears you down, worrying about family, grief, financial pressures, medical concerns, or pushing through exhaustion. You may not think of these as stressful—that is why the separate questions below matter.</div>
+            <input type="range" id="stress" min="0" max="10" value="5">
+            <label class="food-choice" style="margin-top:10px;"><input type="checkbox" id="stressUnknown"> I'm not sure / I don't want to rate my stress today</label>
         </div>
 
+
+
+        <!-- Independent self-reported emotional signs: never inferred to be cortisol or histamine levels -->
+        <div class="slider-group" id="emotionalSection">
+          <div class="section-heading"><span>Emotional Signs &amp; Stress Responses</span><span class="value-badge" id="emotional-score">—</span></div>
+          <p class="layman-explanation">You do not have to call something “stress” to describe what happened. Think about the last 24 hours. How often did you experience each of these?</p>
+          <p class="notice"><strong>Frequency:</strong> 0 = Never · 1 = Briefly or once · 2 = Several times · 3 = Much of the day · 4 = Nearly all day. “Not sure / Skip” is never counted as zero.</p>
+          <div class="emotional-questions">
+            <div class="emotion-question">
+              <label class="field-label" for="emotionTeary">Did you feel tearful or cry?</label>
+              <select id="emotionTeary" class="emotion-input"><option value="">Not sure / Skip</option><option value="0">0 — Never</option><option value="1">1 — Briefly or once</option><option value="2">2 — Several times</option><option value="3">3 — Much of the day</option><option value="4">4 — Nearly all day</option></select>
+            </div>
+            <div class="emotion-question">
+              <label class="field-label" for="emotionWorry">Did you worry or keep thinking about something upsetting?</label>
+              <select id="emotionWorry" class="emotion-input"><option value="">Not sure / Skip</option><option value="0">0 — Never</option><option value="1">1 — Briefly or once</option><option value="2">2 — Several times</option><option value="3">3 — Much of the day</option><option value="4">4 — Nearly all day</option></select>
+            </div>
+            <div class="emotion-question">
+              <label class="field-label" for="emotionTense">Did you feel tense, uneasy, or unable to relax?</label>
+              <select id="emotionTense" class="emotion-input"><option value="">Not sure / Skip</option><option value="0">0 — Never</option><option value="1">1 — Briefly or once</option><option value="2">2 — Several times</option><option value="3">3 — Much of the day</option><option value="4">4 — Nearly all day</option></select>
+            </div>
+            <div class="emotion-question">
+              <label class="field-label" for="emotionDrained">Did you feel emotionally drained or overwhelmed?</label>
+              <select id="emotionDrained" class="emotion-input"><option value="">Not sure / Skip</option><option value="0">0 — Never</option><option value="1">1 — Briefly or once</option><option value="2">2 — Several times</option><option value="3">3 — Much of the day</option><option value="4">4 — Nearly all day</option></select>
+            </div>
+          </div>
+          <p id="emotional-coverage" class="footnote" aria-live="polite">0 of 4 answered · No score until all four are answered.</p>
+          <div id="emotional-observation" class="insight-note" aria-live="polite">Your responses will be shown alongside your perceived stress rating, not automatically added to the bucket calculation.</div>
+          <p class="notice">This custom 0–10 frequency summary is exploratory, not a validated clinical scale. Tearfulness and grief are normal human experiences, not automatically signs of illness.</p>
+        </div>
+
+        <div class="slider-group" id="ongoingSection">
+          <div class="section-heading">Ongoing Life Circumstances <span class="subtle-tag">Optional · Not scored</span></div>
+          <p class="layman-explanation">Some burdens become such a familiar part of life that we stop describing them as stressful. Choose anything you want to note—without judging or explaining it.</p>
+          <div class="food-options" id="ongoingOptions">
+            <label class="food-choice"><input type="checkbox" name="ongoing" value="grief"> Missing someone / grief or bereavement</label>
+            <label class="food-choice"><input type="checkbox" name="ongoing" value="work"> Draining or difficult work situation</label>
+            <label class="food-choice"><input type="checkbox" name="ongoing" value="care"> Caregiving or ongoing family responsibilities</label>
+            <label class="food-choice"><input type="checkbox" name="ongoing" value="health"> Health concerns, illness, or treatment</label>
+            <label class="food-choice"><input type="checkbox" name="ongoing" value="money"> Financial concerns</label>
+            <label class="food-choice"><input type="checkbox" name="ongoing" value="relationships"> Difficult relationship or family situation</label>
+            <label class="food-choice"><input type="checkbox" name="ongoing" value="other"> Something else</label>
+          </div>
+          <label class="food-choice"><input id="noOngoing" type="checkbox"> None of these to report</label>
+          <div class="form-grid" style="margin-top:17px;">
+            <div><label class="field-label" for="ongoingDuration">How long has the longest-standing situation been present?</label>
+              <select id="ongoingDuration"><option value="">Not answered / Not sure</option><option value="days">Days</option><option value="weeks">Weeks</option><option value="months">Months</option><option value="years">Years</option></select></div>
+            <div><label class="field-label" for="ongoingImpact">How much did it affect your day, if at all?</label>
+              <select id="ongoingImpact"><option value="">Not answered / Not sure</option><option value="0">0 — Not at all</option><option value="1">1 — A little</option><option value="2">2 — Some</option><option value="3">3 — Quite a bit</option><option value="4">4 — Extremely</option></select></div>
+            <div><label class="field-label" for="recoveryTime">Were you able to rest or unwind today?</label>
+              <select id="recoveryTime"><option value="">Not answered / Not sure</option><option value="none">No time</option><option value="little">Very little</option><option value="some">Some time</option><option value="plenty">Plenty of time</option></select></div>
+          </div>
+          <div style="margin-top:15px;">
+            <label class="field-label" for="ongoingNotes">Anything you want to remember? (optional)</label>
+            <textarea id="ongoingNotes" rows="2" maxlength="600" placeholder="Optional note in your own words. Leave blank if private."></textarea>
+          </div>
+          <p class="notice">Circumstances and notes are only included in a local save or a file you export. Personal notes are <strong>not</strong> included in the Notion copy-summary. Anyone with access to this browser may be able to view locally saved data. Family/guest records are not linked to your Notion.</p>
+        </div>
 
         <!-- Sleep: separated into specific, observable answers -->
         <div class="slider-group">
@@ -287,7 +354,8 @@
         </div>
 
         <!-- Symptom Thresholds -->
-        <div class="section-title">3. Resulting Symptom Load</div>
+        <div class="section-title">3. Illustrative Symptom Patterns</div>
+        <p class="notice">These percentages come from the model's illustrative formula, not predicted symptoms or an interpretation of your emotional questionnaire.</p>
         <div class="symptom-bars">
             <div class="bar-row">
                 <div class="bar-label"><span>Brain Fog & Mental Sluggishness</span><span id="brainfog-score">75%</span></div>
@@ -321,7 +389,7 @@
         </details>
         <div class="save-panel">
             <div class="section-title">4. Save or Export Your Observation</div>
-            <p class="notice">Save is local to this browser, by date and profile. Saving the same date again replaces that profile's local entry, rather than creating a duplicate. This does not sync to Notion yet.</p>
+            <p class="notice">Save is local to this browser, by date and profile. Saving the same date again replaces that profile's local entry. This does not sync to Notion yet. Avoid entering private personal details on shared devices.</p>
             <div class="toolbar-buttons">
                 <button type="button" class="primary" id="saveEntry">Save Daily Entry Locally</button>
                 <button type="button" id="exportEntry">Download Entry (JSON)</button>
@@ -347,7 +415,11 @@
       const $ = id => document.getElementById(id);
       const foodBoxes = Array.from(document.querySelectorAll('input[name="food"]'));
       const sleepFields = ['sleepHours','awakenings','returnSleep','sleepQuality','refreshed','sleepReason'];
-      const formFields = [...sleepFields,'stress'];
+      const emotionFields=['emotionTeary','emotionWorry','emotionTense','emotionDrained'];
+      const ongoingBoxes=Array.from(document.querySelectorAll('input[name="ongoing"]'));
+      const ongoingFields=['ongoingDuration','ongoingImpact','recoveryTime','ongoingNotes'];
+      let emotionalSummary=null;
+      const formFields = [...sleepFields,'stress','stressUnknown',...emotionFields,...ongoingFields];
       const currentDate = () => {
         const today = new Date();
         const offset = today.getTimezoneOffset() * 60000;
@@ -397,7 +469,7 @@
         $('copyNotion').hidden = !owner;
         $('privacyNote').textContent = owner
           ? 'Owner mode: saved locally in this browser only. Copy Notion Summary prepares text for your existing dated Task & Journal entry; automatic sync is NOT connected. No credentials belong in this public page.'
-          : 'Guest mode: each device has its own local records. On a shared browser, guest labels are not password-protected and others with access to the browser may view the data. Guest entries never go to the owner’s Notion.';
+          : 'Guest mode: each device has its own local records. On a shared browser, guest labels are not password-protected and others with access to the browser may view the data. Guest entries are never sent to the owner’s Notion. Owner mode also is not password-protected here.';
       }
       $('profile').addEventListener('change',updateProfile); updateProfile();
 
@@ -429,6 +501,41 @@
         $('sleep-val').textContent=score===''?'—':score;
         return score;
       }
+
+      function emotionalResponses() {
+        const values=emotionFields.map(id=>$(id).value===''?null:Number($(id).value));
+        const answered=values.filter(v=>v!==null).length;
+        emotionalSummary=answered===emotionFields.length
+          ?Math.round((values.reduce((a,b)=>a+b,0)/16)*100)/10:null;
+        $('emotional-score').textContent=emotionalSummary===null?'—':emotionalSummary.toFixed(1)+'/10';
+        $('emotional-coverage').textContent=answered+' of 4 answered · '+(
+          answered===4?'Frequency summary ready.':'No score until all four are answered.');
+        const feltUnknown=$('stressUnknown').checked;
+        $('stress').disabled=feltUnknown;
+        const feltStress=feltUnknown?null:Number($('stress').value);
+        $('stress-val').textContent=feltUnknown?'—':String(feltStress);
+        const insight=$('emotional-observation');
+        if(emotionalSummary===null){
+          insight.textContent='Your reported feelings and life circumstances are stored separately from perceived stress. Complete all four frequency questions to compare them.';
+        } else if(feltUnknown){
+          insight.textContent='You reported emotional responses without rating perceived stress. That is okay; the two are independent observations.';
+        } else if(feltStress<=3 && emotionalSummary>=6) {
+          insight.textContent='Worth noticing: You rated perceived stress as low, while reporting frequent emotional signs. Neither answer is wrong. This is a pattern to explore, not a medical diagnosis.';
+        } else {
+          insight.textContent='Perceived stress: '+feltStress+'/10 · Emotional-response frequency: '+emotionalSummary.toFixed(1)+'/10. They measure different experiences and are not automatically combined.';
+        }
+        return feltStress;
+      }
+      function ongoingAnswers() {
+        return {
+          circumstances:ongoingBoxes.filter(x=>x.checked).map(x=>x.value),
+          noneReported:$('noOngoing').checked,
+          duration:$('ongoingDuration').value||null,
+          impact:$('ongoingImpact').value===''?null:Number($('ongoingImpact').value),
+          recoveryTime:$('recoveryTime').value||null,
+          privateNotes:$('ongoingNotes').value.trim()||null
+        };
+      }
       function updateBar(id,value) {
         const bar=$(id+'-bar'),label=$(id+'-score');
         bar.style.width = value===null?'0%':value+'%';
@@ -438,7 +545,7 @@
       function renderNextSteps() {
         const intro=$('actionIntro'),items=$('actionItems');
         items.replaceChildren();
-        if (!currentLevel) {intro.textContent='Complete sleep and food inputs to explore next steps.';return;}
+        if (!currentLevel) {intro.textContent='Complete food, sleep, and perceived stress inputs to explore next steps.';return;}
         intro.textContent = currentLevel+' — Choose the steps that feel relevant to your situation.';
         for (const item of advice[currentLevel]) {
           const li=document.createElement('li'),label=document.createElement('label'),cb=document.createElement('input'),txt=document.createElement('span');
@@ -446,13 +553,12 @@
         }
       }
       function recalculate() {
-        const diet = calculateFood(), sleep = calculateSleep(), stress = Number($('stress').value);
-        $('stress-val').textContent=String(stress);
+        const diet = calculateFood(), sleep = calculateSleep(), stress = emotionalResponses();
         const bucket=$('bucket-water'),status=$('overflow-index');
-        if (diet==='' || sleep==='') {
+        if (diet==='' || sleep==='' || stress===null) {
           currentLoad=null;currentLevel='';
           bucket.style.height='0%';
-          status.textContent='Add food and sleep answers to see the bucket';
+          status.textContent='Answer food, sleep, and perceived stress to see the illustrative bucket';
           status.style.color='var(--accent-primary)';
           for (const id of ['brainfog','joint','gi','cardio','anxiety']) updateBar(id,null);
           renderNextSteps();return;
@@ -473,6 +579,11 @@
       }
       function setAnswers(values) {
         $('stress').value=values.stress;
+        $('stressUnknown').checked=false;
+        emotionFields.forEach(id=>$(id).value=(values.emotions && Object.hasOwn(values.emotions,id))?String(values.emotions[id]):'');
+        ongoingBoxes.forEach(box=>box.checked=(values.ongoing||[]).includes(box.value));
+        $('noOngoing').checked=values.noOngoing===true;
+        for(const id of ongoingFields) $(id).value=values[id]??'';
         foodBoxes.forEach(box=>box.checked=(values.foods||[]).includes(box.value));
         $('noFoods').checked=(values.foods||[]).length===0;
         for (const id of sleepFields) $(id).value=values[id]||'';
@@ -480,10 +591,15 @@
         showMessage('scenarioStatus','Scenario preview only — change answers or explicitly confirm before saving as your real day.');
         recalculate();
       }
-      $('highPreset').addEventListener('click',()=>setAnswers({stress:9,foods:['aged-cheese','cured-meat','leftovers'],sleepHours:'lt4',awakenings:'4plus',returnSleep:'over30',sleepQuality:'2',refreshed:'no',sleepReason:'worry'}));
-      $('calmPreset').addEventListener('click',()=>setAnswers({stress:2,foods:[],sleepHours:'7to9',awakenings:'0',returnSleep:'na',sleepQuality:'9',refreshed:'yes'}));
+      $('highPreset').addEventListener('click',()=>setAnswers({stress:9,foods:['aged-cheese','cured-meat','leftovers'],sleepHours:'lt4',awakenings:'4plus',returnSleep:'over30',sleepQuality:'2',refreshed:'no',sleepReason:'worry',emotions:{emotionTeary:3,emotionWorry:4,emotionTense:4,emotionDrained:4},ongoing:['work'],ongoingDuration:'months',ongoingImpact:'3',recoveryTime:'little'}));
+      $('calmPreset').addEventListener('click',()=>setAnswers({stress:2,foods:[],sleepHours:'7to9',awakenings:'0',returnSleep:'na',sleepQuality:'9',refreshed:'yes',emotions:{emotionTeary:0,emotionWorry:0,emotionTense:0,emotionDrained:0},ongoing:[],noOngoing:true,ongoingImpact:'0',recoveryTime:'plenty'}));
       $('resetInputs').addEventListener('click',()=>{
-        $('stress').value=5;$('noFoods').checked=false;
+        $('stress').value=5;$('stressUnknown').checked=false;
+        emotionFields.forEach(id=>$(id).value='');
+        ongoingBoxes.forEach(box=>box.checked=false);
+        $('noOngoing').checked=false;
+        ongoingFields.forEach(id=>$(id).value='');
+        $('noFoods').checked=false;
         foodBoxes.forEach(x=>x.checked=false);
         sleepFields.forEach(id=>$(id).value='');
         scenarioPreview=false;
@@ -499,10 +615,22 @@
         recalculate();
       });
       for (const id of [...formFields]) $(id).addEventListener('input',recalculate);
+      ongoingBoxes.forEach(box=>box.addEventListener('change',()=>{
+        if(box.checked) $('noOngoing').checked=false;
+        recalculate();
+      }));
+      $('noOngoing').addEventListener('change',()=>{
+        if($('noOngoing').checked)ongoingBoxes.forEach(box=>box.checked=false);
+        recalculate();
+      });
       function entry() {
         return {
-          version:2,date:$('entryDate').value,profile:$('profile').value,
-          stress:Number($('stress').value),
+          version:3,date:$('entryDate').value,profile:$('profile').value,
+          stress:$('stressUnknown').checked?null:Number($('stress').value),
+          perceivedStressUnknown:$('stressUnknown').checked,
+          emotionalResponses:Object.fromEntries(emotionFields.map(id=>[id,$(id).value===''?null:Number($(id).value)])),
+          emotionalFrequencyScore:emotionalSummary,
+          ongoingContext:ongoingAnswers(),
           foodCategories:foodBoxes.filter(x=>x.checked).map(x=>x.value),
           noListedFoods:$('noFoods').checked,
           dietScore:$('diet').value===''?null:Number($('diet').value),
@@ -523,7 +651,7 @@
       }
       function validToSave() {
         if (!$('entryDate').value) {showMessage('saveStatus','Choose a date.');return false;}
-        if ($('diet').value===''&&$('sleep').value==='') {showMessage('saveStatus','Enter at least one sleep or food observation before saving.');return false;}
+        if ($('diet').value===''&&$('sleep').value===''&& emotionalSummary===null && ongoingBoxes.every(x=>!x.checked) && !$('noOngoing').checked && $('ongoingNotes').value.trim()==='') {showMessage('saveStatus','Enter at least one observation before saving.');return false;}
         if (scenarioPreview && !confirm('A demo scenario preset is active. Are these truly your observations for this date? Select Cancel to avoid saving example data.')) return false;
         return true;
       }
@@ -558,7 +686,11 @@
           'Sleep duration band: '+(e.sleepHours??'Not recorded')+'\n'+
           'Time to return to sleep: '+(e.returnToSleep??'Not recorded')+'\n'+
           'Reason for waking: '+(e.sleepReason??'Not recorded')+'\n'+
-          'Stress (0–10): '+e.stress+'\n'+
+          'Perceived stress (0–10): '+(e.stress??'Not recorded')+'\n'+
+          'Emotional responses (0–4 frequency each; null means not recorded): '+emotionFields.map(id=>id.replace('emotion','')+'='+ (e.emotionalResponses[id]??'not recorded')).join(', ')+'\n'+
+          'Emotional frequency summary (illustrative /10): '+(e.emotionalFrequencyScore??'Not calculated')+'\n'+
+          'Ongoing circumstances: '+(e.ongoingContext.circumstances.length?e.ongoingContext.circumstances.join(', '):(e.ongoingContext.noneReported?'None reported':'Not recorded'))+'\n'+
+          'Ongoing duration: '+(e.ongoingContext.duration??'Not recorded')+'; impact (0–4): '+(e.ongoingContext.impact??'Not recorded')+'; recovery time: '+(e.ongoingContext.recoveryTime??'Not recorded')+'\n'+
           'Food categories: '+list+'\n'+
           'Illustrative bucket index: '+(e.illustrativeBucket??'Not calculated')+'\n'+
           'Note: exploratory self-report, not a medical measurement. Add to existing dated 2026 Task & Journal entry without replacing existing fields.';
